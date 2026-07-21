@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>חיפוש אתר | מערכת ניהול אבטחה</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav>
+    <a href="/" class="brand">מערכת ניהול אבטחה</a>
+    <a href="/">ראשי</a>
+    <a href="/customers">לקוחות</a>
+    <a href="/search" class="active">חיפוש אתר</a>
+    <a href="/queries">שאילתות</a>
+</nav>
+
+<div class="page-wrapper">
+    <div class="card">
+        <h2>חיפוש אתר של לקוח</h2>
+
+        <form action="/search/result" method="get">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="customerId">מספר לקוח</label>
+                    <input type="number" id="customerId" name="customerId" min="1" placeholder="לדוגמה: 1"
+                           th:value="${customerId}"/>
+                </div>
+                <div class="form-group">
+                    <label for="siteId">מספר אתר</label>
+                    <input type="number" id="siteId" name="siteId" min="1" placeholder="לדוגמה: 1"
+                           th:value="${siteId}"/>
+                </div>
+                <div class="form-group" style="justify-content:flex-end;">
+                    <button type="submit" class="btn btn-primary">חפש</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Error -->
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <!-- Result -->
+    <div th:if="${result}" class="card">
+        <h2>תוצאות חיפוש</h2>
+        <div class="result-box">
+            <div class="row">
+                <span class="label">מספר לקוח</span>
+                <span class="value" th:text="${result.customerID}"></span>
+            </div>
+            <div class="row">
+                <span class="label">שם מלא</span>
+                <span class="value" th:text="${result.fullName}"></span>
+            </div>
+            <div class="row">
+                <span class="label">מספר אתרים בבעלות הלקוח</span>
+                <span class="value" th:text="${result.siteCount}"></span>
+            </div>
+            <div class="row">
+                <span class="label">מספר סידורי מנוי תקף</span>
+                <span class="value"
+                      th:text="${result.validSerialNum != null ? result.validSerialNum : 'אין מנוי תקף'}"></span>
+            </div>
+            <div class="row">
+                <span class="label">תאריך קריאה אחרונה לאתר</span>
+                <span class="value"
+                      th:text="${result.lastCallDate != null ? #temporals.format(result.lastCallDate, 'dd/MM/yyyy') : 'לא נפתחו קריאות לאתר זה'}"></span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

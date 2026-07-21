@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>מערכת ניהול אבטחה</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav>
+    <a href="/" class="brand">מערכת ניהול אבטחה</a>
+    <a href="/" class="active">ראשי</a>
+    <a href="/customers">לקוחות</a>
+    <a href="/search">חיפוש אתר</a>
+    <a href="/queries">שאילתות</a>
+</nav>
+
+<div class="page-wrapper">
+    <div class="card">
+        <h2>ברוכים הבאים למערכת ניהול האבטחה</h2>
+        <p>בחרו פעולה מהתפריט למעלה, או לחצו על אחת מהאפשרויות הבאות:</p>
+
+        <div th:if="${dbStatus != null}">
+            <p class="db-status"
+               th:classappend="${dbStatus.startsWith('שגיאה') ? 'err' : ''}"
+               th:text="${dbStatus.startsWith('שגיאה') ? 'שגיאת חיבור: ' + dbStatus : 'מחובר למסד נתונים: ' + dbStatus}"></p>
+        </div>
+
+        <div class="home-grid">
+            <a href="/customers" class="home-card">
+                <div class="icon">👥</div>
+                <h3>הצגת לקוחות</h3>
+                <p>רשימת כל הלקוחות, האתרים שלהם והמנויים האחרונים.</p>
+            </a>
+            <a href="/search" class="home-card">
+                <div class="icon">🔍</div>
+                <h3>חיפוש אתר של לקוח</h3>
+                <p>חיפוש לפי מספר לקוח ומספר אתר, כולל פרטי מנוי ותאריך קריאה אחרונה.</p>
+            </a>
+            <a href="/queries" class="home-card">
+                <div class="icon">📊</div>
+                <h3>שאילתות ודוחות</h3>
+                <p>הרצת תצוגות ופרוצדורות מאוחסנות ממסד הנתונים.</p>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

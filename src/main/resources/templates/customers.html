@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>לקוחות | מערכת ניהול אבטחה</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav>
+    <a href="/" class="brand">מערכת ניהול אבטחה</a>
+    <a href="/">ראשי</a>
+    <a href="/customers" class="active">לקוחות</a>
+    <a href="/search">חיפוש אתר</a>
+    <a href="/queries">שאילתות</a>
+</nav>
+
+<div class="page-wrapper">
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <!-- Customer list -->
+    <div class="card">
+        <h2>רשימת לקוחות</h2>
+        <p style="margin-bottom:14px; color:#555; font-size:.9rem;">לחצו על שורת לקוח להצגת האתרים שלו.</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>מס' לקוח</th>
+                    <th>שם פרטי</th>
+                    <th>שם משפחה</th>
+                    <th>כתובת</th>
+                    <th>טלפון</th>
+                    <th>אימייל</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${customers}"
+                    class="clickable"
+                    th:classappend="${customer != null and customer.customerID == c.customerID} ? ' selected-row' : ''"
+                    th:onclick="|window.location='/customers/' + ${c.customerID} + '/sites'|">
+                    <td th:text="${c.customerID}"></td>
+                    <td th:text="${c.firstName}"></td>
+                    <td th:text="${c.lastName}"></td>
+                    <td th:text="${c.address}"></td>
+                    <td th:text="${c.phoneNum}"></td>
+                    <td th:text="${c.email}"></td>
+                </tr>
+                <tr th:if="${customers == null or #lists.isEmpty(customers)}">
+                    <td colspan="6" style="text-align:center; color:#888;">אין לקוחות במערכת</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Sites panel (shown after selecting a customer) -->
+    <div th:if="${customer != null}" class="card">
+        <h2>
+            אתרים של:
+            <span th:text="${customer.firstName + ' ' + customer.lastName}"></span>
+            <span style="color:#888; font-weight:400; font-size:.95rem;"
+                  th:text="' (לקוח ' + ${customer.customerID} + ')'"></span>
+        </h2>
+
+        <div th:if="${sites == null or #lists.isEmpty(sites)}" class="alert alert-info">
+            ללקוח זה אין אתרים רשומים.
+        </div>
+
+        <div th:if="${sites != null and not #lists.isEmpty(sites)}" class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>מס' אתר</th>
+                    <th>מיקום</th>
+                    <th>תאריך פתיחה</th>
+                    <th>מס' מנוי</th>
+                    <th>תאריך תחילת חיוב</th>
+                    <th>סוג שירות</th>
+                    <th>הנחה (%)</th>
+                    <th>סטטוס</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s : ${sites}">
+                    <td th:text="${s.siteID}"></td>
+                    <td th:text="${s.location}"></td>
+                    <td th:text="${s.startDate != null ? #temporals.format(s.startDate, 'dd/MM/yyyy') : '-'}"></td>
+                    <td th:text="${s.serialNum != null ? s.serialNum : 'אין מנוי'}"></td>
+                    <td th:text="${s.serviceStartDate != null ? #temporals.format(s.serviceStartDate, 'dd/MM/yyyy') : '-'}"></td>
+                    <td th:text="${s.serviceDescription != null ? s.serviceDescription : '-'}"></td>
+                    <td>
+                        <span th:if="${s.discount != null}" th:text="${s.discount + '%'}"></span>
+                        <span th:if="${s.discount == null}">-</span>
+                    </td>
+                    <td>
+                        <span th:if="${s.valid == null}" class="badge badge-inactive">אין מנוי</span>
+                        <span th:if="${s.valid != null and s.valid == 1}" class="badge badge-active">בתוקף</span>
+                        <span th:if="${s.valid != null and s.valid != 1}" class="badge badge-inactive">לא בתוקף</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>שאילתות | מערכת ניהול אבטחה</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<nav>
+    <a href="/" class="brand">מערכת ניהול אבטחה</a>
+    <a href="/">ראשי</a>
+    <a href="/customers">לקוחות</a>
+    <a href="/search">חיפוש אתר</a>
+    <a href="/queries" class="active">שאילתות</a>
+</nav>
+
+<div class="page-wrapper">
+    <div class="card">
+        <h2>שאילתות ודוחות</h2>
+
+        <!-- 6 query buttons -->
+        <div class="query-grid">
+            <a href="/queries/inactive-sites" class="query-btn"
+               th:classappend="${title == 'אתרים לא פעילים'} ? ' active' : ''">
+                א. אתרים לא פעילים
+            </a>
+            <a href="/queries/patrol-incentives" class="query-btn"
+               th:classappend="${title == 'תמריצי סיירים'} ? ' active' : ''">
+                ב. תמריצי סיירים
+            </a>
+            <a href="/queries/monthly-charge" class="query-btn"
+               th:classappend="${title == 'חישוב חיוב חודשי ללקוח'} ? ' active' : ''">
+                ג. חיוב חודשי ללקוח
+            </a>
+            <a href="/queries/patrol-stats" class="query-btn"
+               th:classappend="${title == 'סטטיסטיקות סיור חודשיות'} ? ' active' : ''">
+                ד. סטטיסטיקות סיור
+            </a>
+            <a href="/queries/repairs-billing" class="query-btn"
+               th:classappend="${title == 'חיוב תיקונים'} ? ' active' : ''">
+                ה. חיוב תיקונים
+            </a>
+            <a href="/queries/items-stock" class="query-btn"
+               th:classappend="${title == 'מלאי פריטים'} ? ' active' : ''">
+                ו. מלאי פריטים
+            </a>
+        </div>
+
+        <!-- Inline form: Monthly Charge -->
+        <div th:if="${showMonthlyChargeForm}" class="card" style="background:#f7f8fc; margin-bottom:0;">
+            <h2 style="font-size:1rem;" th:text="${title}"></h2>
+            <form action="/queries/monthly-charge" method="get">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customerId">מספר לקוח</label>
+                        <input type="number" id="customerId" name="customerId" min="1" placeholder="לדוגמה: 1"
+                               th:value="${customerIdInput}"/>
+                    </div>
+                    <div class="form-group" style="justify-content:flex-end;">
+                        <button type="submit" class="btn btn-primary">הרץ</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Inline form: Patrol Stats -->
+        <div th:if="${showPatrolStatsForm}" class="card" style="background:#f7f8fc; margin-bottom:0;">
+            <h2 style="font-size:1rem;" th:text="${title}"></h2>
+            <form action="/queries/patrol-stats" method="get">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="minRequest">מינימום בקשות</label>
+                        <input type="number" id="minRequest" name="minRequest" min="0" placeholder="לדוגמה: 5"
+                               th:value="${minRequestInput}"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="month">חודש (1-12)</label>
+                        <input type="number" id="month" name="month" min="1" max="12" placeholder="לדוגמה: 6"
+                               th:value="${monthInput}"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="year">שנה</label>
+                        <input type="number" id="year" name="year" min="2000" placeholder="לדוגמה: 2024"
+                               th:value="${yearInput}"/>
+                    </div>
+                    <div class="form-group" style="justify-content:flex-end;">
+                        <button type="submit" class="btn btn-primary">הרץ</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results area -->
+    <div th:if="${result}" class="card">
+        <h2 th:text="${title != null ? title : 'תוצאות'}"></h2>
+
+        <!-- PRINT/RAISERROR messages from stored procedures -->
+        <div th:if="${result.hasMessages()}" class="sql-messages">
+            <strong>הודעות מהמסד:</strong>
+            <p th:each="msg : ${result.messages}" th:text="${msg}"></p>
+        </div>
+
+        <!-- Table -->
+        <div th:if="${result.hasData()}" class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th th:each="h : ${result.headers}" th:text="${h}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row : ${result.rows}">
+                    <td th:each="cell : ${row}" th:text="${cell}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(result.rows)}">
+                    <td th:attr="colspan=${result.headers.size()}"
+                        style="text-align:center; color:#888;">אין רשומות להצגה</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- No data and no messages -->
+        <div th:if="${!result.hasData() and !result.hasMessages()}" class="alert alert-info">
+            הפרוצדורה הסתיימה בהצלחה — לא הוחזרו נתונים.
+        </div>
+    </div>
+</div>
+</body>
+</html>
