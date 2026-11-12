@@ -11,7 +11,7 @@
   - **SQL Server and Windows Authentication mode** מופעל (Server Properties → Security)
   - משתמש `springapp` עם גישה למסד `project`:
     ```sql
-    CREATE LOGIN springapp WITH PASSWORD = 'Spring@DB2024!';
+    CREATE LOGIN springapp WITH PASSWORD = '${DB_PASSWORD}';
     USE project;
     CREATE USER springapp FOR LOGIN springapp;
     ALTER ROLE db_datareader ADD MEMBER springapp;
